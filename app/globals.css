@@ -2,7 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ----------------------------------------------------------------
+   Theming.
+
+   Three modes:
+   - default (no data-theme attribute on <html>): follows OS via
+     prefers-color-scheme.
+   - data-theme="light": always light.
+   - data-theme="dark":  always dark.
+
+   The dark scheme is hand-rolled so the page looks intentional in
+   dark mode, not just inverted. This also keeps Dark Reader from
+   double-applying its own filter (we declare both schemes via
+   color-scheme:light dark, and Dark Reader respects that).
+---------------------------------------------------------------- */
+
 :root {
+  color-scheme: light dark;
+
+  --ink: #0d0d0e;
+  --ink-soft: #6a6a70;
+  --ink-faint: #a5a5aa;
+  --line: #1c1c1f;
+  --line-soft: #d8d8d4;
+  --paper: #fafaf7;
+  --paper-tint: #f3f1ea;
+  --paper-zebra: #fbfaf5;
+  --link: #1a0dab;
+  --link-visited: #609;
+  --code-bg: #f2f1ec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8e8ea;
+    --ink-soft: #9a9aa0;
+    --ink-faint: #5a5a60;
+    --line: #2a2a2e;
+    --line-soft: #1f1f22;
+    --paper: #0c0c0d;
+    --paper-tint: #141416;
+    --paper-zebra: #101012;
+    --link: #7aa7ff;
+    --link-visited: #c08bff;
+    --code-bg: #1a1a1c;
+  }
+}
+
+/* Explicit user override beats prefers-color-scheme. */
+html[data-theme="light"] {
   color-scheme: light;
   --ink: #0d0d0e;
   --ink-soft: #6a6a70;
@@ -10,9 +58,26 @@
   --line: #1c1c1f;
   --line-soft: #d8d8d4;
   --paper: #fafaf7;
+  --paper-tint: #f3f1ea;
+  --paper-zebra: #fbfaf5;
   --link: #1a0dab;
   --link-visited: #609;
   --code-bg: #f2f1ec;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e8e8ea;
+  --ink-soft: #9a9aa0;
+  --ink-faint: #5a5a60;
+  --line: #2a2a2e;
+  --line-soft: #1f1f22;
+  --paper: #0c0c0d;
+  --paper-tint: #141416;
+  --paper-zebra: #101012;
+  --link: #7aa7ff;
+  --link-visited: #c08bff;
+  --code-bg: #1a1a1c;
 }
 
 * { box-sizing: border-box; }
@@ -68,8 +133,8 @@ th, td {
   text-align: left;
   vertical-align: top;
 }
-th { font-weight: 700; background: #f3f1ea; }
-tr:nth-child(even) td { background: #fbfaf5; }
+th { font-weight: 700; background: var(--paper-tint); }
+tr:nth-child(even) td { background: var(--paper-zebra); }
 
 pre, code, kbd, samp { font-family: inherit; }
 pre {
@@ -114,7 +179,8 @@ img {
   margin-right: -50vw;
 }
 
-/* Hero image — Apple-style edge-to-edge dark photograph. */
+/* Hero image — Apple-style edge-to-edge dark photograph.
+   Stays dark in both themes; the hero PNG itself is a dark studio shot. */
 .hero-image {
   margin-top: -28px;
   margin-bottom: 0;
@@ -183,10 +249,27 @@ img {
 section { margin: 0; }
 
 /* Header & footer: soft, single-line, no chrome. */
-header { margin: 0 0 0.4rem; }
+header { margin: 0 0 0.4rem; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+header > p { flex: 1; min-width: 0; }
 header p, footer p { color: var(--ink-soft); }
 header a, footer a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line-soft); padding-bottom: 1px; }
 header a:hover, footer a:hover { border-bottom-color: var(--ink); }
+
+/* Theme toggle button — header-right, mono, instrument-feel. */
+.theme-toggle {
+  font: inherit;
+  font-size: 0.85em;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line-soft);
+  border-radius: 0;
+  padding: 2px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.theme-toggle:hover { color: var(--ink); border-color: var(--ink); }
+.theme-toggle:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* Wider breathing room on desktop. */
 @media (min-width: 900px) {
@@ -197,11 +280,17 @@ header a:hover, footer a:hover { border-bottom-color: var(--ink); }
   .hero-text { margin: 4.4rem auto 2.0rem; }
 }
 
-/* Print: hide the hero photo, keep the data. */
+/* Print: hide the hero photo, keep the data. Force light in print. */
 @media print {
+  :root, html[data-theme] {
+    --ink: #000; --ink-soft: #333; --ink-faint: #666;
+    --line: #000; --line-soft: #ccc;
+    --paper: #fff; --paper-tint: #f5f5f5; --paper-zebra: #fafafa;
+    --link: #000; --link-visited: #000; --code-bg: #f0f0f0;
+  }
   body { padding: 12mm; max-width: none; }
   a { color: #000; text-decoration: none; }
-  .hero-image, .inline-figure, .section-break { display: none; }
+  .hero-image, .inline-figure, .section-break, .theme-toggle { display: none; }
   h2 { page-break-before: avoid; page-break-after: avoid; }
 }
 
