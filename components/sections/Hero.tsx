@@ -1,8 +1,10 @@
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
 export function Hero() {
   return (
     <section id="top">
       <div className="full-bleed hero-image">
-        <img src="/hero.png" alt="shiun EVT prototype" />
+        <img src={`${BASE}/hero.png`} alt="shiun EVT prototype" />
       </div>
 
       <div className="hero-text">
