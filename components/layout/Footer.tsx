@@ -4,7 +4,7 @@ export function Footer() {
       <hr />
       <p style={{ margin: 0 }}>
         shiun · Munich ·{' '}
-        <a href="mailto:hello@shiun.de">hello@shiun.de</a> ·{' '}
+        <a href="mailto:i@kq.ci">i@kq.ci</a> ·{' '}
         <a href="https://github.com/shiun-de/shiun">github</a>
       </p>
     </footer>
