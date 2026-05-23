@@ -1,9 +1,11 @@
-# shiun — homepage
+# shiun.de — homepage
 
 The marketing site for [shiun](https://github.com/shiun-de/shiun), a bedside
 CO₂ monitor.
 
 Static-exported Next.js. Deployed to GitHub Pages on every push to `main`.
+
+Live URL: **https://shiun-de.github.io/**
 
 ## Local
 
@@ -21,16 +23,19 @@ npm run build   # produces ./out/ as a static site
 ## Deploy
 
 Pushed to `main` → GitHub Actions (`.github/workflows/deploy.yml`) builds
-the static export and publishes it to GitHub Pages.
+the static export and publishes it to GitHub Pages. The Actions
+`configure-pages` step sets `NEXT_PUBLIC_BASE_PATH` automatically; for
+this org-site repo it's empty (served at the apex), so all asset URLs are
+root-relative.
 
-Live URL: https://shiun-de.github.io/homepage/
-
-When `shiun.de` is registered, point a CNAME to `shiun-de.github.io` and
-set `NEXT_PUBLIC_BASE_PATH=""` to drop the `/homepage` URL prefix.
+When `shiun.de` is registered, add a `CNAME` file containing `shiun.de`
+to this repo's root and point a CNAME DNS record at `shiun-de.github.io`.
+No code changes needed.
 
 ## Stack
 
 - Next.js 14 (static export)
 - Tailwind for utilities (most styling is hand-written CSS in `app/globals.css`)
-- No JavaScript at runtime beyond Next's default hydration. No 3D, no
-  client-side state, no API routes. By design.
+- Dark mode via `prefers-color-scheme` + a manual toggle (auto / light / dark)
+- No JavaScript at runtime beyond Next's default hydration and the small
+  theme-toggle component. No 3D, no API routes. By design.

@@ -5,12 +5,13 @@ const nextConfig = {
   // Static export for GitHub Pages.
   output: 'export',
   images: { unoptimized: true },
-  // GitHub Pages serves under https://shiun-de.github.io/homepage/ unless a
-  // custom domain is set. basePath/assetPrefix make all asset URLs work
-  // under that subpath. When you wire shiun.de as a custom domain (CNAME),
-  // set NEXT_PUBLIC_BASE_PATH='' to disable both.
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? '/homepage',
-  assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH ?? '/homepage',
+  // This repo IS the shiun-de user/org Pages site, served at the apex
+  // (https://shiun-de.github.io/). No basePath needed. If you later add a
+  // custom domain via CNAME, behavior stays identical.
+  // NEXT_PUBLIC_BASE_PATH is honored if set (e.g. for a future project-site
+  // deployment under a subpath), otherwise empty.
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? '',
+  assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH ?? '',
   trailingSlash: true,
 };
 
