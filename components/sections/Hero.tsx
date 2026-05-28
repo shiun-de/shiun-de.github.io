@@ -1,10 +1,19 @@
+import Image from 'next/image';
+
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export function Hero() {
   return (
     <section id="top">
       <div className="full-bleed hero-image">
-        <img src={`${BASE}/hero.png`} alt="shiun EVT prototype" />
+        <Image
+          src={`${BASE}/product-hero-v2.png`}
+          alt="Shiun bedside CO2 monitor on a nightstand"
+          width={1537}
+          height={1023}
+          priority
+          sizes="100vw"
+        />
       </div>
 
       <div className="hero-text">
@@ -21,7 +30,7 @@ export function Hero() {
         €229 Aranet4, or a lab instrument.
       </p>
 
-      <table>
+      <table className="comparison-table">
         <thead>
           <tr>
             <th></th>
@@ -33,39 +42,39 @@ export function Hero() {
         <tbody>
           <tr>
             <td>Sensor</td>
-            <td>MOX VOC estimator</td>
-            <td>Photoacoustic NDIR</td>
-            <td>NDIR</td>
+            <td data-label="Cheap &quot;CO2&quot;">MOX VOC estimator</td>
+            <td data-label="shiun">Photoacoustic NDIR</td>
+            <td data-label="Aranet4">NDIR</td>
           </tr>
           <tr>
             <td>Direct CO₂?</td>
-            <td>No</td>
-            <td>Yes</td>
-            <td>Yes</td>
+            <td data-label="Cheap &quot;CO2&quot;">No</td>
+            <td data-label="shiun">Yes</td>
+            <td data-label="Aranet4">Yes</td>
           </tr>
           <tr>
             <td>Accuracy</td>
-            <td>Wide drift, uncalibrated</td>
-            <td>±40 ppm + 5 %</td>
-            <td>±50 ppm</td>
+            <td data-label="Cheap &quot;CO2&quot;">Wide drift, uncalibrated</td>
+            <td data-label="shiun">±40 ppm + 5 %</td>
+            <td data-label="Aranet4">±50 ppm</td>
           </tr>
           <tr>
             <td>App / cloud</td>
-            <td>Often required</td>
-            <td>None</td>
-            <td>Optional</td>
+            <td data-label="Cheap &quot;CO2&quot;">Often required</td>
+            <td data-label="shiun">None</td>
+            <td data-label="Aranet4">Optional</td>
           </tr>
           <tr>
             <td>Source</td>
-            <td>Closed</td>
-            <td>Open BOM + firmware</td>
-            <td>Closed</td>
+            <td data-label="Cheap &quot;CO2&quot;">Closed</td>
+            <td data-label="shiun">Open BOM + firmware</td>
+            <td data-label="Aranet4">Closed</td>
           </tr>
           <tr>
             <td>Price</td>
-            <td>€15–30</td>
-            <td><strong>€129</strong></td>
-            <td>€229</td>
+            <td data-label="Cheap &quot;CO2&quot;">€15–30</td>
+            <td data-label="shiun"><strong>€129</strong></td>
+            <td data-label="Aranet4">€229</td>
           </tr>
         </tbody>
       </table>
@@ -76,7 +85,7 @@ export function Hero() {
         radio, the app, and the subscription.
       </p>
 
-      <p>Dark by default. One charge a year. No app, no cloud, no radio.</p>
+      <p>Dark by default. Months per charge. No app, no cloud, no radio.</p>
 
       <p>
         <strong>€129</strong>. First batch Q4 2026.{' '}

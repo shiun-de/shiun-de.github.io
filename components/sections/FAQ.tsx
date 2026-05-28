@@ -3,7 +3,7 @@ export function FAQ() {
     <section id="faq">
       <h2>faq</h2>
       <dl>
-        <dt>Does it need WiFi or Bluetooth?</dt>
+        <dt>Does it need Wi-Fi or Bluetooth?</dt>
         <dd>No. There is no radio on board. The device is fully standalone.</dd>
 
         <dt>Is there an app?</dt>
@@ -25,10 +25,10 @@ export function FAQ() {
         <dd>No. In order to keep prices low and quality high, we don&apos;t offer any customization.</dd>
 
         <dt>Open source?</dt>
-        <dd>Yes. Firmware, schematic, BOM at first ship. MIT.</dd>
+        <dd>Yes. Firmware and tools are MIT; hardware and enclosure files use CERN-OHL-P v2.</dd>
 
         <dt>Where is it made?</dt>
-        <dd>Europe. PCBs from Aisler.</dd>
+        <dd>JLCPCB SMT assembly with LCSC parts where practical; final assembly is still a DVT decision.</dd>
 
         <dt>Battery replaceable?</dt>
         <dd>Yes. One Phillips screwdriver. Free replacement at year 8.</dd>

@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Hero } from '@/components/sections/Hero';
+import { ProductImages } from '@/components/sections/ProductImages';
 import { HowItWorks } from '@/components/sections/HowItWorks';
 import { Specs } from '@/components/sections/Specs';
 import { FAQ } from '@/components/sections/FAQ';
@@ -15,6 +16,8 @@ export default function Home() {
     <>
       <Header />
       <Hero />
+      <Break />
+      <ProductImages />
       <Break />
       <HowItWorks />
       <Break />

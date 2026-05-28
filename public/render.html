@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>shiun render</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0a0a0c; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="900" height="630"></canvas>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const W = 900, H = 630;
+const params = new URLSearchParams(location.search);
+const view = params.get('view') || 'iso';
+const mood = params.get('mood') || 'stable';
+const bg   = params.get('bg')   || 'dark';
+
+const MOOD = {
+  stable:   { halo: 0x6BE197, led: 0x6BE197, paper: 0xe8e6dc, paperEmissive: 0x000000, paperE: 0.0 },
+  drifting: { halo: 0xFFB547, led: 0xFFB547, paper: 0xe8e6dc, paperEmissive: 0x000000, paperE: 0.0 },
+  rapid:    { halo: 0xFF5A2E, led: 0xFF5A2E, paper: 0xffd0b0, paperEmissive: 0xFF5A2E, paperE: 0.4 },
+  morning:  { halo: 0xffe6b3, led: 0xffe6b3, paper: 0xfaf0d6, paperEmissive: 0xfaf0d6, paperE: 0.55 },
+};
+const palette = MOOD[mood] || MOOD.stable;
+
+const VIEWS = {
+  iso:     { pos: [70, 50, 90], target: [0, 12, 0], fov: 32 },
+  quarter: { pos: [85, 35, 55], target: [0, 12, 0], fov: 32 },
+  side:    { pos: [110, 18, 0], target: [0, 12, 0], fov: 28 },
+  top:     { pos: [8, 130, 12], target: [0, 12, 0], fov: 32 },
+  front:   { pos: [0, 28, 95], target: [0, 12, 0], fov: 32 },
+  hero:    { pos: [60, 42, 85], target: [0, 13, 0], fov: 30 },
+};
+const v = VIEWS[view] || VIEWS.iso;
+
+const BG = {
+  dark:   0x0a0a0c,
+  paper:  0xfafaf7,
+  studio: 0x1c1c20,
+};
+const bgColor = BG[bg] ?? BG.dark;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(bgColor);
+
+const camera = new THREE.PerspectiveCamera(v.fov, W / H, 0.5, 1000);
+camera.position.set(v.pos[0], v.pos[1], v.pos[2]);
+camera.lookAt(v.target[0], v.target[1], v.target[2]);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('c'),
+  antialias: true,
+  preserveDrawingBuffer: true,
+});
+renderer.setSize(W, H, false);
+renderer.setPixelRatio(2);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+scene.add(new THREE.AmbientLight(0x9aa3b0, 0.22));
+const key = new THREE.DirectionalLight(0xffffff, 1.1);
+key.position.set(60, 110, 45);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = -60; key.shadow.camera.right = 60;
+key.shadow.camera.top = 60;   key.shadow.camera.bottom = -60;
+key.shadow.bias = -0.0002;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x79a5ff, 0.35);
+fill.position.set(-80, 30, 30);
+scene.add(fill);
+const rim  = new THREE.DirectionalLight(0xffd9a0, 0.55);
+rim.position.set(20, 60, -60);
+scene.add(rim);
+
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const floorMat = new THREE.MeshStandardMaterial({
+  color: bg === 'paper' ? 0xf0f0ee : 0x070709,
+  roughness: 0.92, metalness: 0.18,
+});
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = -0.05;
+floor.receiveShadow = true;
+scene.add(floor);
+
+const puck = new THREE.Group();
+
+const bottomMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0e0e10, metalness: 0.0, roughness: 0.55,
+  clearcoat: 0.18, clearcoatRoughness: 0.65, sheen: 0.25,
+  envMapIntensity: 0.7,
+});
+const bottom = new THREE.Mesh(new THREE.CylinderGeometry(31, 30.2, 11.6, 128), bottomMat);
+bottom.position.y = 5.8;
+bottom.castShadow = true; bottom.receiveShadow = true;
+puck.add(bottom);
+
+const haloMat = new THREE.MeshPhysicalMaterial({
+  color: palette.halo,
+  emissive: palette.halo,
+  emissiveIntensity: 1.6,
+  transparent: true,
+  opacity: 0.92,
+  transmission: 0.45,
+  thickness: 0.6,
+  ior: 1.45,
+  roughness: 0.15,
+  clearcoat: 0.6,
+});
+const halo = new THREE.Mesh(new THREE.CylinderGeometry(31.4, 31.4, 1.6, 192), haloMat);
+halo.position.y = 12.6;
+puck.add(halo);
+
+const topMat = new THREE.MeshPhysicalMaterial({
+  color: 0xb8b8be,
+  metalness: 0.62,
+  roughness: 0.28,
+  clearcoat: 0.12,
+  clearcoatRoughness: 0.42,
+  iridescence: 0.45,
+  iridescenceIOR: 1.45,
+  iridescenceThicknessRange: [220, 560],
+  envMapIntensity: 1.0,
+});
+const top = new THREE.Mesh(new THREE.CylinderGeometry(30.2, 31, 11.6, 128), topMat);
+top.position.y = 19.4;
+top.castShadow = true; top.receiveShadow = true;
+puck.add(top);
+
+const grooves = new THREE.Mesh(
+  new THREE.RingGeometry(2.0, 30.0, 192, 1),
+  new THREE.MeshStandardMaterial({
+    color: 0xb8b8be, metalness: 0.55, roughness: 0.32,
+    side: THREE.DoubleSide,
+  }),
+);
+grooves.rotation.x = -Math.PI / 2;
+grooves.position.y = 25.21;
+puck.add(grooves);
+
+const bezel = new THREE.Mesh(
+  new THREE.BoxGeometry(38, 0.8, 24),
+  new THREE.MeshStandardMaterial({ color: 0x18181a, roughness: 0.6 }),
+);
+bezel.position.y = 25.5;
+puck.add(bezel);
+
+const paperMat = new THREE.MeshStandardMaterial({
+  color: palette.paper,
+  roughness: 0.92,
+  emissive: palette.paperEmissive,
+  emissiveIntensity: palette.paperE,
+});
+const epaper = new THREE.Mesh(new THREE.BoxGeometry(35, 0.6, 21), paperMat);
+epaper.position.y = 25.85;
+puck.add(epaper);
+
+const led = new THREE.Mesh(
+  new THREE.SphereGeometry(1.4, 32, 16),
+  new THREE.MeshStandardMaterial({
+    color: palette.led, emissive: palette.led, emissiveIntensity: 2.4, roughness: 0.2,
+  }),
+);
+led.position.set(22, 26.0, 0);
+puck.add(led);
+
+const als = new THREE.Mesh(
+  new THREE.CircleGeometry(2.0, 48),
+  new THREE.MeshPhysicalMaterial({
+    color: 0x0d0d10, roughness: 0.05, clearcoat: 1.0,
+    clearcoatRoughness: 0.05, metalness: 0.0,
+  }),
+);
+als.rotation.x = -Math.PI / 2;
+als.position.set(-22, 26.05, 0);
+puck.add(als);
+
+const touch = new THREE.Mesh(
+  new THREE.CircleGeometry(3.5, 64),
+  new THREE.MeshStandardMaterial({
+    color: 0xa8a8ae, roughness: 0.45, metalness: 0.5,
+  }),
+);
+touch.rotation.x = -Math.PI / 2;
+touch.position.set(0, 26.04, 11);
+puck.add(touch);
+
+const usbWidth = 9, usbHeight = 3.2, usbDepth = 2.2;
+const usbHousing = new THREE.Mesh(
+  new THREE.BoxGeometry(usbWidth + 1, usbHeight + 1, usbDepth),
+  new THREE.MeshStandardMaterial({ color: 0x05050a, roughness: 0.4 }),
+);
+usbHousing.position.set(0, 12.6, -29.8);
+puck.add(usbHousing);
+const usbHole = new THREE.Mesh(
+  new THREE.BoxGeometry(usbWidth, usbHeight, 1.5),
+  new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.3 }),
+);
+usbHole.position.set(0, 12.6, -29.0);
+puck.add(usbHole);
+
+scene.add(puck);
+
+renderer.render(scene, camera);
+requestAnimationFrame(() => {
+  renderer.render(scene, camera);
+  document.body.setAttribute('data-ready', '1');
+});
+</script>
+</body>
+</html>

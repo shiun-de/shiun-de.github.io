@@ -7,6 +7,8 @@ export function Header() {
         <p style={{ margin: 0 }}>
           <strong>shiun</strong>
           {' / '}
+          <a href="#product">product</a>
+          {' / '}
           <a href="#how">how</a>
           {' / '}
           <a href="#specs">specs</a>

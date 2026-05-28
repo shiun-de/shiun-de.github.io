@@ -67,8 +67,8 @@ export const siteMetadata: Metadata = {
     },
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
+    shortcut: [{ url: '/icon', type: 'image/png', sizes: '32x32' }],
+    apple: [{ url: '/apple-icon', type: 'image/png', sizes: '180x180' }],
   },
 };
